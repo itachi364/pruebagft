@@ -1,0 +1,80 @@
+[
+  {
+    "ruleId": "rule-pho-cd-des",
+    "version": 1,
+    "name": "CDT Desmaterializado",
+    "sourcePattern": "PHO_CD_DES_*",
+    "targetTemplate": "01_Estructura CDT Desmaterializado_{date}",
+    "requiresDate": true,
+    "dateStrategy": "AUTO",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "ruleId": "rule-pho-sv",
+    "version": 1,
+    "name": "Cuenta Ahorros",
+    "sourcePattern": "PHO_SV_*",
+    "targetTemplate": "03_Estructura Cuenta Ahorros_{date}",
+    "requiresDate": true,
+    "dateStrategy": "AUTO",
+    "priority": 20,
+    "active": true
+  },
+  {
+    "ruleId": "rule-pho-ck",
+    "version": 1,
+    "name": "Cuenta Corriente",
+    "sourcePattern": "PHO_CK_*",
+    "targetTemplate": "04_Estructura Cuenta Corriente_{date}",
+    "requiresDate": true,
+    "dateStrategy": "AUTO",
+    "priority": 30,
+    "active": true
+  },
+  {
+    "ruleId": "rule-pho-ml-util",
+    "version": 1,
+    "name": "Creditos Utilizacion",
+    "sourcePattern": "PHO_ML_UTIL_*",
+    "targetTemplate": "13_CREDITOS UTILIZACION_{date}",
+    "requiresDate": true,
+    "dateStrategy": "AUTO",
+    "priority": 40,
+    "active": true
+  },
+  {
+    "ruleId": "rule-cuotas-bdb",
+    "version": 1,
+    "name": "Cuotas Activos",
+    "sourcePattern": "cuotas_bdb_*",
+    "targetTemplate": "13_CUOTAS Activos",
+    "requiresDate": false,
+    "dateStrategy": "NONE",
+    "priority": 50,
+    "active": true
+  },
+  {
+    "ruleId": "rule-garantias-solo-firma",
+    "version": 1,
+    "name": "Garantias Solo Firma",
+    "sourcePattern": "garantias_solo_firma_*",
+    "targetTemplate": "14_Solo Firma_{date}",
+    "requiresDate": true,
+    "dateStrategy": "YYYYDDMM",
+    "priority": 60,
+    "active": true
+  },
+  {
+    "ruleId": "rule-activos-vehiculo",
+    "version": 1,
+    "name": "Leasing Vehiculo",
+    "sourcePattern": "activos_vehiculo_*",
+    "targetTemplate": "37_Leasing_Vehiculo_{date}",
+    "requiresDate": true,
+    "dateStrategy": "AUTO",
+    "priority": 70,
+    "active": true
+  }
+]
+

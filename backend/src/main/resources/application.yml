@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+app:
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    endpoint-url: ${AWS_ENDPOINT_URL:}
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:file-renaming-input-local}
+  dynamodb:
+    rules-table-name: ${RULES_TABLE_NAME:file-renaming-rules-local}
+    batches-table-name: ${BATCHES_TABLE_NAME:file-renaming-batches-local}
+    results-table-name: ${RESULTS_TABLE_NAME:file-renaming-results-local}
+  adapters:
+    storage: ${APP_STORAGE_ADAPTER:memory}
+    persistence: ${APP_PERSISTENCE_ADAPTER:memory}
+

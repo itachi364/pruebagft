@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "s3-renaming-dev"
+resolve_s3 = true
+s3_prefix = "s3-renaming-dev"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = [
+  "StageName=dev",
+  "InputBucketName=file-renaming-input-dev",
+  "FrontendBucketName=file-renaming-frontend-dev"
+]
+

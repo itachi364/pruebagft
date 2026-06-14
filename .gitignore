@@ -1,0 +1,35 @@
+# Build outputs
+target/
+dist/
+build/
+coverage/
+.angular/
+
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AWS/SAM
+.aws-sam/
+samconfig.toml
+

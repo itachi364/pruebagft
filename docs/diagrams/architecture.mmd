@@ -1,0 +1,32 @@
+flowchart LR
+  Operator[Operador] --> Angular[Frontend Angular]
+  Angular --> ApiGateway[API Gateway HTTP API]
+  ApiGateway --> Lambda[Lambda Java 17 Spring Boot]
+
+  subgraph Backend[Backend Hexagonal]
+    Lambda --> ApiAdapter[Adaptador API]
+    ApiAdapter --> UseCases[Casos de Uso]
+    UseCases --> RuleEngine[Motor de Reglas]
+    UseCases --> Ports[Puertos de Salida]
+  end
+
+  Ports --> S3[(S3)]
+  Ports --> DynamoDB[(DynamoDB)]
+  Ports -. opcional .-> SQS[(SQS)]
+
+  subgraph Local[Local]
+    Compose[Docker Compose] --> LocalStack[LocalStack]
+    LocalStack --> S3
+    LocalStack --> DynamoDB
+  end
+
+  subgraph FrontDeploy[Frontend AWS]
+    CloudFront[CloudFront] --> FrontBucket[(S3 Static Site)]
+  end
+
+  SAM[AWS SAM] --> ApiGateway
+  SAM --> Lambda
+  SAM --> S3
+  SAM --> DynamoDB
+  SAM --> CloudFront
+
