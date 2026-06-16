@@ -177,6 +177,47 @@ sam deploy --guided
 
 Antes de desplegar se deben configurar parametros por ambiente, roles IAM de menor privilegio y variables seguras fuera del repositorio.
 
+Despliegue automatizado desde PowerShell:
+
+```powershell
+.\scripts\deploy-aws.ps1 `
+  -AccountId "<aws-account-id>" `
+  -Region "<aws-region>" `
+  -StageName "dev" `
+  -StackName "s3-renaming-dev"
+```
+
+El script ejecuta `mvn clean verify`, construye el frontend, valida SAM, despliega infraestructura, publica el frontend en S3, invalida CloudFront y carga datos simulados.
+
+Los nombres de buckets deben ser globalmente unicos. La convencion recomendada es:
+
+```text
+s3-renaming-input-<aws-account-id>-<aws-region>-<stage>
+s3-renaming-frontend-<aws-account-id>-<aws-region>-<stage>
+```
+
+Validacion de outputs:
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name s3-renaming-dev \
+  --region <aws-region> \
+  --query "Stacks[0].Outputs"
+```
+
+Validacion funcional posterior:
+
+```bash
+curl "<ApiUrl-del-output>/api/health"
+curl "<ApiUrl-del-output>/api/files"
+```
+
+Para eliminar el stack:
+
+```bash
+sam delete --stack-name s3-renaming-dev --region <aws-region>
+```
+
 ## Ambientes
 
 ### Local

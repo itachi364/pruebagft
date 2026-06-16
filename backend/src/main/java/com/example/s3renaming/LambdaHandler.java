@@ -17,6 +17,10 @@ public class LambdaHandler implements RequestStreamHandler {
     static {
         try {
             HANDLER = SpringBootLambdaContainerHandler.getAwsProxyHandler(S3RenamingApplication.class);
+            String stageName = System.getenv("STAGE_NAME");
+            if (stageName != null && !stageName.isBlank()) {
+                HANDLER.stripBasePath("/" + stageName);
+            }
         } catch (ContainerInitializationException exception) {
             throw new ExceptionInInitializerError(exception);
         }
@@ -27,4 +31,3 @@ public class LambdaHandler implements RequestStreamHandler {
         HANDLER.proxyStream(input, output, context);
     }
 }
-

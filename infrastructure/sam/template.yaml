@@ -21,13 +21,13 @@ Globals:
     Tracing: Active
     Environment:
       Variables:
-        AWS_REGION: !Ref AWS::Region
         S3_BUCKET_NAME: !Ref InputBucket
         RULES_TABLE_NAME: !Ref RulesTable
         BATCHES_TABLE_NAME: !Ref BatchesTable
         RESULTS_TABLE_NAME: !Ref ResultsTable
         APP_STORAGE_ADAPTER: s3
         APP_PERSISTENCE_ADAPTER: dynamodb
+        STAGE_NAME: !Ref StageName
 
 Resources:
   HttpApi:
@@ -40,7 +40,7 @@ Resources:
     Properties:
       FunctionName: !Sub s3-renaming-backend-${StageName}
       Handler: com.example.s3renaming.LambdaHandler::handleRequest
-      CodeUri: ../../backend/target/s3-renaming-backend-0.1.0.jar
+      CodeUri: ../../backend/target/s3-renaming-backend-0.1.0-aws.jar
       Policies:
         - S3ReadPolicy:
             BucketName: !Ref InputBucket
@@ -57,6 +57,7 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /{proxy+}
             Method: ANY
+            PayloadFormatVersion: '1.0'
 
   InputBucket:
     Type: AWS::S3::Bucket
@@ -142,6 +143,12 @@ Resources:
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
             S3OriginConfig: {}
             OriginAccessControlId: !Ref FrontendOriginAccessControl
+          - Id: BackendApiOrigin
+            DomainName: !Sub ${HttpApi}.execute-api.${AWS::Region}.amazonaws.com
+            OriginPath: !Sub /${StageName}
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
         DefaultCacheBehavior:
           TargetOriginId: FrontendS3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -155,18 +162,66 @@ Resources:
             QueryString: false
             Cookies:
               Forward: none
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: BackendApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - Authorization
+                - Content-Type
+              Cookies:
+                Forward: all
+            MinTTL: 0
+            DefaultTTL: 0
+            MaxTTL: 0
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${FrontendBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}
 
 Outputs:
   ApiUrl:
     Description: Backend HTTP API URL.
     Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
+  HttpApiId:
+    Description: HTTP API id.
+    Value: !Ref HttpApi
   InputBucket:
     Description: Input S3 bucket.
     Value: !Ref InputBucket
   FrontendBucket:
     Description: Frontend S3 bucket.
     Value: !Ref FrontendBucket
+  FrontendDistributionId:
+    Description: CloudFront distribution id.
+    Value: !Ref FrontendDistribution
   FrontendDistributionDomain:
     Description: CloudFront domain for frontend.
     Value: !GetAtt FrontendDistribution.DomainName
-
